@@ -1,5 +1,5 @@
-from audio.audio_input import AudioInput
-from audio.audio_output import AudioOutput
+from audio.input.audio_input import AudioInput
+from audio.output.audio_output import AudioOutput
 from GPT.gpt_response import GPTResponse
 
 class Teste:
