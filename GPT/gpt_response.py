@@ -5,10 +5,12 @@ class GPTResponse:
         openai.api_key = api_key
 
     def gerar_resposta(self, pergunta):
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=pergunta,
-            max_tokens=150
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": pergunta}
+            ]
         )
-        resposta = response.choices[0].text.strip()
+        resposta = response['choices'][0]['message']['content'].strip()
         return resposta
