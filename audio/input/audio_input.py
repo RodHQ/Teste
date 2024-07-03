@@ -1,27 +1,33 @@
 import speech_recognition as sr
-import sounddevice as sd
 
-class AudioInput:
-    def __init__(self, samplerate=44100, duration=5, channels=1):
-        self.samplerate = samplerate
-        self.duration = duration
-        self.channels = channels
-        self.recognizer = sr.Recognizer()
+from audio.output.audio_output import falar_resposta
 
-    def ouvir_pergunta(self):
+
+def ouvir_e_converter():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
         print("Diga algo:")
-        recording = sd.rec(int(self.duration * self.samplerate), samplerate=self.samplerate, channels=self.channels, dtype='int16')
-        sd.wait()
+        # Ajusta o reconhecimento de energia para a fonte de áudio atual (microfone)
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        # Listen for the first phrase and extract it into audio data
+        audio = recognizer.listen(source, timeout=10, phrase_time_limit=10)
 
-        audio_data = recording.tobytes()
-        try:
-            audio = sr.AudioData(audio_data, self.samplerate, 2)
-            texto = self.recognizer.recognize_google(audio, language='pt-BR')
-            print(f"Você disse: {texto}")
-            return texto
-        except sr.UnknownValueError:
-            print("Google Web Speech não conseguiu entender o áudio")
-            return None
-        except sr.RequestError as e:
-            print(f"Erro ao solicitar resultados do serviço Google Web Speech; {e}")
-            return None
+    try:
+        texto = recognizer.recognize_google(audio, language='pt-BR')
+        print(f"Você disse: {texto}")
+        return texto
+    except sr.UnknownValueError:
+        print("Google Web Speech não conseguiu entender o áudio")
+        return None
+    except sr.RequestError as e:
+        print(f"Erro ao solicitar resultados do serviço Google Web Speech; {e}")
+        return None
+
+# Exemplo de uso da função ouvir_e_converter
+if __name__ == "__main__":
+    texto = ouvir_e_converter()
+    if texto:
+        falar_resposta(texto)
+        print(f"Texto reconhecido: {texto}")
+    else:
+        print("Nenhum texto reconhecido.")

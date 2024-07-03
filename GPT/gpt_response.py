@@ -4,13 +4,19 @@ class GPTResponse:
     def __init__(self, api_key):
         openai.api_key = api_key
 
-    def gerar_resposta(self, pergunta):
+    def gerar_resposta(self, prompt):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": pergunta}
+                {"role": "system", "content": "Você é um assistente útil."},
+                {"role": "user", "content": prompt}
             ]
         )
-        resposta = response['choices'][0]['message']['content'].strip()
-        return resposta
+        return response.choices[0].message['content']
+
+# Exemplo de uso da classe GPTResponse
+if __name__ == "__main__":
+    api_key = 'sua-chave-de-api'
+    gpt_response = GPTResponse(api_key)
+    resposta = gpt_response.gerar_resposta("Olá, como você está?")
+    print(resposta)
